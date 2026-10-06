@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Encouragement Card 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #f5e6ea;
+    background-image: radial-gradient(#e8c5cc 1px, transparent 1px);
+    background-size: 24px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    padding: 20px;
+  }
+
+  /* ── MODAL OVERLAY ── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(120, 50, 70, 0.35);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal {
+    background: #fffaf8;
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(120,50,70,0.2);
+    position: relative;
+    border: 2px solid #f0c8d0;
+  }
+
+  .modal-bear {
+    font-size: 48px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .modal h2 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 26px;
+    color: #8b2252;
+    margin-bottom: 6px;
+  }
+
+  .modal p {
+    font-size: 14px;
+    color: #b06080;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal label {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #8b2252;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .modal input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #f0c8d0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Nunito', sans-serif;
+    color: #5a1a3a;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 6px;
+  }
+
+  .modal input:focus { border-color: #c0527a; }
+
+  .input-error {
+    font-size: 12px;
+    color: #c0527a;
+    min-height: 18px;
+    display: block;
+    margin-bottom: 16px;
+    text-align: left;
+    padding-left: 4px;
+  }
+
+  .btn-send {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #d4608a, #c0527a);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(192,82,122,0.35);
+  }
+
+  .btn-send:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(192,82,122,0.4); }
+  .btn-send:active { transform: scale(0.98); }
+
+  /* ── MAIN PAGE ── */
+  .page-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+
+  .page-wrap.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .page-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 28px;
+    color: #8b2252;
+    text-align: center;
+  }
+
+  /* ── POSTCARD ── */
+  .stamp-border {
+    background: #e8a0b8;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    background-image:
+      radial-gradient(circle, #f5e6ea 6px, transparent 6px),
+      radial-gradient(circle, #f5e6ea 6px, transparent 6px),
+      radial-gradient(circle, #f5e6ea 6px, transparent 6px),
+      radial-gradient(circle, #f5e6ea 6px, transparent 6px);
+    background-position: top center, bottom center, left center, right center;
+    background-size: 18px 18px, 18px 18px, 18px 18px, 18px 18px;
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    box-shadow: 0 12px 40px rgba(180,80,120,0.25), 0 2px 8px rgba(180,80,120,0.15);
+    max-width: 560px;
+    width: 100%;
+  }
+
+  .postcard {
+    background: #fef9f0;
+    border-radius: 6px;
+    padding: 28px 28px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0;
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .postcard::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 60px;
+    bottom: 20px;
+    width: 1px;
+    background: #e0d0c0;
+    transform: translateX(-50%);
+  }
+
+  /* TOP LEFT: bear + POSTCARD label */
+  .pc-top-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-bottom: 16px;
+  }
+
+  .pc-bear { width: 58px; height: auto; }
+
+  /* TOP RIGHT: label + stamp area */
+  .pc-top-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    padding-bottom: 16px;
+  }
+
+  .pc-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #b0a090;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  .stamp-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .postmark {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-right: 4px;
+  }
+
+  .postmark-line {
+    height: 2px;
+    border-radius: 1px;
+    background: #c07090;
+  }
+
+  .stamp {
+    width: 60px;
+    height: 72px;
+    border: 2px solid #c8a878;
+    background: #f5e8d0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 4px;
+    box-shadow: inset 0 0 0 1px #e8d0a8;
+  }
+
+  .stamp::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    background:
+      radial-gradient(circle, #fef9f0 3px, transparent 3px) top left,
+      radial-gradient(circle, #fef9f0 3px, transparent 3px) top right,
+      radial-gradient(circle, #fef9f0 3px, transparent 3px) bottom left,
+      radial-gradient(circle, #fef9f0 3px, transparent 3px) bottom right;
+    background-size: 8px 8px;
+    background-repeat: repeat-x, repeat-x, repeat-x, repeat-x;
+    z-index: -1;
+  }
+
+  .stamp-swan {
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .stamp-text {
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: #8a6a40;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  /* BOTTOM: message left, lines right */
+  .pc-message {
+    grid-column: 1;
+    padding-right: 20px;
+    padding-top: 4px;
+  }
+
+  .pc-message p {
+    font-family: 'Dancing Script', cursive;
+    font-size: 19px;
+    color: #8b2252;
+    line-height: 1.6;
+  }
+
+  .pc-message p span.name-highlight {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .pc-lines {
+    grid-column: 2;
+    padding-left: 20px;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
+  .pc-line {
+    height: 1px;
+    background: #d8c8b8;
+    border-radius: 1px;
+    width: 100%;
+  }
+
+  /* ── DECORATIONS ── */
+  .deco-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .deco-pill {
+    background: #fff;
+    border: 1.5px solid #f0c8d0;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: #8b2252;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .reset-btn {
+    background: none;
+    border: 1.5px solid #d4b0c0;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #8b2252;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+  .reset-btn:hover { background: #fce8f0; }
+
+  /* ── ANIMATION ── */
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .animate-in { animation: floatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  @keyframes heartPop {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .heart-float {
+    position: fixed;
+    pointer-events: none;
+    font-size: 24px;
+    z-index: 200;
+    animation: heartUp 1.4s ease-out forwards;
+  }
+
+  @keyframes heartUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.5); }
+  }
+</style>
+</head>
+<body>
+
+<!-- POPUP MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <span class="modal-bear">🐻</span>
+    <h2>Hei, siapa kamu?</h2>
+    <p>Masukkan namamu biar aku bisa kirim semangat khusus buat ujianmu! 🌸</p>
+    <label for="nameInput">Nama kamu</label>
+    <input type="text" id="nameInput" placeholder="Contoh: Ana, Budi, Sarah…" maxlength="30" autocomplete="off" />
+    <span class="input-error" id="inputError"></span>
+    <button class="btn-send" onclick="showCard()">Kirim Semangat 💌</button>
+  </div>
+</div>
+
+<!-- MAIN CARD PAGE -->
+<div class="page-wrap" id="mainPage">
+  <p class="page-title" id="pageTitle">Sepucuk surat untukmu 🌸</p>
+
+  <div class="stamp-border animate-in" id="cardWrap">
+    <div class="postcard">
+
+      <!-- TOP LEFT -->
+      <div class="pc-top-left">
+        <div style="font-size:48px;line-height:1;margin-bottom:4px;">🐻</div>
+      </div>
+
+      <!-- TOP RIGHT -->
+      <div class="pc-top-right">
+        <div class="pc-label">POSTCARD</div>
+        <div class="stamp-area">
+          <div class="postmark">
+            <div class="postmark-line" style="width:38px;"></div>
+            <div class="postmark-line" style="width:32px;"></div>
+            <div class="postmark-line" style="width:36px;"></div>
+            <div class="postmark-line" style="width:28px;"></div>
+          </div>
+          <div class="stamp">
+            <div class="stamp-swan">🦢</div>
+            <div class="stamp-text">SWAN LAKE<br>29¢</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM LEFT: message -->
+      <div class="pc-message">
+        <p id="cardText">
+          hi,<br>
+          This is a tiny reminder<br>
+          that you're special to me.
+        </p>
+      </div>
+
+      <!-- BOTTOM RIGHT: ruled lines -->
+      <div class="pc-lines">
+        <div class="pc-line"></div>
+        <div class="pc-line"></div>
+        <div class="pc-line"></div>
+        <div class="pc-line" style="width:70%;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="deco-row" id="decoRow">
+    <div class="deco-pill">✨ You got this!</div>
+    <div class="deco-pill">📚 Do your best</div>
+    <div class="deco-pill">🙏 Let God do the rest</div>
+  </div>
+
+  <button class="reset-btn" onclick="resetCard()">Kirim ke teman lain 💌</button>
+</div>
+
+<script>
+  const nameInput = document.getElementById('nameInput');
+  const inputError = document.getElementById('inputError');
+
+  nameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') showCard();
+  });
+
+  nameInput.addEventListener('input', () => {
+    inputError.textContent = '';
+  });
+
+  function showCard() {
+    const raw = nameInput.value.trim();
+    if (!raw) {
+      inputError.textContent = 'Masukkan namamu dulu ya! 🌸';
+      nameInput.focus();
+      return;
+    }
+
+    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+
+    document.getElementById('cardText').innerHTML =
+      `Hi <span class="name-highlight">${escHtml(name)}</span>,<br>` +
+      `semangat ya buat mid exam-nya!<br><br>` +
+      `Aku tau <em>${escHtml(name)}</em> pasti bisa 💪<br>` +
+      `Do your best and let<br>God do the rest!!!`;
+
+    document.getElementById('pageTitle').textContent = `Untuk ${name} 🌸`;
+
+    document.getElementById('overlay').style.display = 'none';
+    const page = document.getElementById('mainPage');
+    page.classList.add('visible');
+
+    spawnHearts();
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function resetCard() {
+    nameInput.value = '';
+    inputError.textContent = '';
+    document.getElementById('mainPage').classList.remove('visible');
+    document.getElementById('overlay').style.display = 'flex';
+    setTimeout(() => nameInput.focus(), 100);
+  }
+
+  function spawnHearts() {
+    const emojis = ['❤️','🌸','✨','💕','🌷','💌'];
+    for (let i = 0; i < 12; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'heart-float';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (10 + Math.random() * 80) + 'vw';
+        el.style.top = (20 + Math.random() * 60) + 'vh';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1500);
+      }, i * 100);
+    }
+  }
+</script>
+</body>
+</html>
